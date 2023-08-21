@@ -97,9 +97,9 @@
           class="top-0 bottom-0 left-0 right-0 flex flex-col flex-1 overflow-hidden bg-transparent bg-bottom bg-cover"
         >
           <div
-            class="self-center flex-1 w-full overflow-hidden overflow-y-auto chatSection max-h-[82.3vh]"
+            class="self-center flex-1 w-full overflow-hidden overflow-y-auto chatSection max-h-[82.5vh]"
           >
-            <div class="relative flex flex-col px-3 py-1 m-auto">
+            <div class="messagesDiv relative flex flex-col px-3 py-1 m-auto">
               <div
                 class="self-center px-2 py-1 mx-0 my-1 text-sm text-gray-700 bg-white border border-gray-200 rounded-full shadow rounded-tg"
               >
@@ -112,15 +112,15 @@
               </div>
               <div
                 class="relative flex flex-col px-3 py-1 m-auto w-full"
-                v-for="(i, index) in arr"
+                v-for="i in arr"
                 :key="i"
               >
                 <div
-                  class="messagesDiv my-2 min-w-[5rem] max-w-[70%]"
-                  :class="index % 2 ? 'self-start' : 'self-end'"
+                  class="my-2 min-w-[5rem] max-w-[70%]"
+                  :class="i.whom !== 'you' ? 'self-start' : 'self-end'"
                 >
                   <div
-                    :class="index % 2 ? 'bg-gray-300' : 'bg-white'"
+                    :class="i.whom !== 'you' ? 'bg-gray-300' : 'bg-white'"
                     class="py-1 break-words px-2 text-sm sm:rounded-t-2xl sm:rounded-r-2xl rounded-t-lg rounded-r-lg shadow"
                   >
                     {{ i.message }}
@@ -228,7 +228,7 @@
               <button
                 @click="() => (sidebar.openModal = false)"
                 type="button"
-                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center"
+                class="cancelUpload text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center"
               >
                 <i class="bx bx-x text-2xl"></i>
               </button>
@@ -251,7 +251,7 @@
                         sidebar.openModal = false;
                       }
                     "
-                    class="bx bx-trash bg-[#00000032] rounded-r-md p-1 cursor-pointer"
+                    class="cancelUpload bx bx-trash bg-[#00000032] rounded-r-md p-1 cursor-pointer"
                   ></i>
                 </div>
                 <div id="filesDiv">
@@ -268,16 +268,19 @@
                 </div>
               </div>
               <div class="relative">
-                <input
+                <textarea
+                  v-model="store.caption"
                   type="text"
-                  id="floating_outlined"
-                  class="block pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  id="caption"
+                  cols="1"
+                  rows="1"
+                  class="txta block pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                   placeholder=""
-                />
+                ></textarea>
                 <hr class="border-2" />
                 <label
-                  for="floating_outlined"
-                  class="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-0"
+                  for="caption"
+                  class="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-7 left-0"
                   >Caption</label
                 >
               </div>
@@ -288,13 +291,14 @@
             >
               <button
                 @click="() => (sidebar.openModal = false)"
-                class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none font-medium rounded-lg text-sm px-3 py-1.5 text-center"
+                class="cancelUpload text-white bg-blue-700 hover:bg-blue-800 focus:outline-none font-medium rounded-lg text-sm px-3 py-1.5 text-center"
               >
                 Cancel
               </button>
               <button
+                @click="() => sendFile()"
                 id="sendFile"
-                class="text-gray-500 bg-white hover:bg-gray-100 focus:outline-none rounded-lg border border-gray-200 text-sm font-medium px-3 py-1.5 hover:text-gray-900 focus:z-10"
+                class="cancelUpload text-gray-500 bg-white hover:bg-gray-100 focus:outline-none rounded-lg border border-gray-200 text-sm font-medium px-3 py-1.5 hover:text-gray-900 focus:z-10"
               >
                 Send
               </button>
@@ -308,18 +312,31 @@
 
 <script setup>
 import { useSidebarStore } from "../../stores/sidebar";
+const sidebar = useSidebarStore();
 
 const store = reactive({
   filetype: "image",
   videoSrc: "",
+  caption: "",
 });
-
-const sidebar = useSidebarStore();
-
-const arr = ref([]);
 const message = ref("");
 const commands = ref(["/start", "/text", "/audio", "/file", "/photo"]);
 
+// ------------------------- Fake store -------------------------
+const arr = ref([
+  { whom: "you", message: "Hello world", time: "12: 00" },
+  { whom: "Nickname", message: "Hi!", time: "12:01" },
+]);
+
+// ------------------------- Scroll Bottom -------------------------
+const crollBottom = () => {
+  $(".chatSection").animate(
+    { scrollTop: $(".chatSection")[0].scrollHeight },
+    1
+  );
+};
+
+// ------------------------- Send only TEXT Messages -------------------------
 const sendMessage = (e) => {
   if (!message.value.length) return;
   let hour = new Date().getHours();
@@ -331,14 +348,99 @@ const sendMessage = (e) => {
     hour = "0" + hour;
   }
   hour = hour + ":" + minute;
-  arr.value.push({ message: message.value, time: hour });
+  const div = document.createElement("div");
+  div.innerHTML = `<div
+    class="relative flex flex-col px-3 py-1 m-auto w-full"
+  >
+    <div
+      class="my-2 min-w-[5rem] max-w-[70%] self-end"
+    >
+      <div
+        class="py-1 break-words px-2 text-sm bg-white sm:rounded-t-2xl sm:rounded-r-2xl rounded-t-lg rounded-r-lg shadow"
+      >
+        ${message.value}
+        <p class="w-full text-end text-gray-400 text-xs">
+          ${hour} AM
+        </p>
+      </div>
+    </div>
+  </div>`;
+  const Main = document.querySelector(".messagesDiv");
+  Main.append(div);
   message.value = "";
-  $(".chatSection").animate(
-    { scrollTop: $(".chatSection")[0].scrollHeight },
-    1
-  );
+  crollBottom();
 };
 
+// ------------------------- Send files(Image, Video, Audio and Documents) -------------------------
+async function sendFile() {
+  const div = document.createElement("div");
+  div.className =
+    "my-2 h-full bg-white rounded-2xl overflow-hidden self-end min-w-[5rem] max-w-[70%]";
+
+  if (store.filetype === "image") {
+    const fileSrc = document.querySelector("#filesDiv img").src;
+    div.innerHTML = `<img class="max-w-full border min-h-[10rem] bg-gray-200 max-h-[70vh] rounded object-cover" src="${fileSrc}" alt="img">`;
+  } else if (store.filetype === "video") {
+    const fileSrc = document.querySelector("#filesDiv video source").src;
+    div.innerHTML = `<div class="flex items-center justify-center">
+            <video muted="" autoplay="">
+                <source src="${fileSrc}" />
+            </video>
+        </div>`;
+  } else if (store.filetype === "audio") {
+    const fileSrc = document.querySelector("#filesDiv audio source").src;
+    div.innerHTML = `
+    <div class="rounded bg-[#F1F3F4]">
+      <audio muted class="pointer-events-none"
+        controls
+      >
+        <source src="${fileSrc}" />
+      </audio>
+    <div>`;
+  } else {
+    const fileName = document.querySelector("#filesDiv .fileName").innerHTML;
+    const fileSize = document.querySelector("#filesDiv .fileSize").innerHTML;
+
+    div.innerHTML = `
+      <div class="flex gap-5 bg-white py-2 pl-2 pr-5 rounded-2xl max-w-sm overflow-hidden items-center">
+        <i class="flex items-center justify-center bx bx-file text-3xl rounded-full bg-gray-500 text-white h-14 min-w-[3.5rem] w-14"></i>
+        <div>
+            <p class="fileName truncate">${fileName}</p>
+            <p class="fileSize">${fileSize} KB</p>
+        </div>
+      </div>`;
+  }
+  const pre = document.createElement("pre");
+  pre.className = "px-5 pb-2 pt-1";
+  if (store.caption.trim()) {
+    pre.innerHTML = store.caption.trim();
+    div.appendChild(pre);
+  }
+  const p = document.createElement("p");
+
+  // ------------------ now Date() ------------------
+  let hour = new Date().getHours();
+  let minute = new Date().getMinutes();
+  if (minute < 10) {
+    minute = "0" + minute;
+  }
+  if (hour < 10) {
+    hour = "0" + hour;
+  }
+  hour = hour + ":" + minute;
+
+  p.innerHTML = hour + " PM";
+  p.className =
+    "float-right -mt-5 mr-2 bg-white/40 text-xs px-1 rounded-md relative z-10";
+  div.appendChild(p);
+  const Main = document.querySelector(".messagesDiv");
+  Main.append(div);
+  sidebar.openModal = false;
+  document.querySelector("#video-upload").innerHTML = "";
+  crollBottom();
+}
+
+// ------------------------- jQuery -------------------------
 $(document).ready(function () {
   $("input").on("input", function () {
     if ($(this).val()[0] == "/") {
@@ -348,12 +450,21 @@ $(document).ready(function () {
     }
   });
 
+  // ------------------------- Send Bot Commands(/start, /image, /video, /audio) -------------------------
   $(".ul li").click(function () {
     message.value = $(this, "span").text();
     sendMessage();
     $(".ul").addClass("hidden");
   });
 
+  // ------------------------- Cancel Upload Files(Image, Video, ...) -------------------------
+  $(".cancelUpload").click(function () {
+    $("input[type=file]").val("");
+    store.caption = "";
+    $("textarea").addClass = "h-[30px]";
+  });
+
+  // ------------------------- Upload file Input change Listener -------------------------
   $("input[type=file]").change(function (e) {
     const file = e.target.files[0];
     if (file?.type?.includes("image")) {
@@ -394,20 +505,63 @@ $(document).ready(function () {
       >
         <i class="flex items-center justify-center bx bx-file text-3xl rounded-full bg-gray-500 text-white h-14 min-w-[3.5rem] w-14"></i>
         <div>
-            <p class="truncate">${file.name}</p>
-            <p>${Math.round(file.size / 1000)} KB</p>
+          <p class="fileName truncate">${file.name}</p>
+          <p class="fileSize">${Math.round(file.size / 1000)} KB</p>
         </div>
       </div>`;
       $("#video-upload").html(uploader);
     }
   });
+});
 
-  // send file
-//   $("#sendFile").click(function () {
-//     console.log("object");
-//     $(".messagesDiv").append($("#filesDiv").html());
-//   });
+onMounted(() => {
+  // ------------------------- Autosize textarea -------------------------
+  let textareas = document.querySelectorAll(".txta"),
+    hiddenDiv = document.createElement("div"),
+    content = null;
+
+  for (let j of textareas) {
+    j.classList.add("txtstuff");
+  }
+  hiddenDiv.classList.add("txta");
+
+  hiddenDiv.style.display = "none";
+  hiddenDiv.style.whiteSpace = "pre-wrap";
+  hiddenDiv.style.wordWrap = "break-word";
+
+  for (let i of textareas) {
+    (function (i) {
+      i.addEventListener("input", function () {
+        i.parentNode.appendChild(hiddenDiv);
+        i.style.resize = "none";
+        i.style.overflow = "hidden";
+        content = i.value;
+        content = content.replace(/\n/g, "<br>");
+        hiddenDiv.innerHTML = content + '<br style="line-height: 3px;">';
+        hiddenDiv.style.visibility = "hidden";
+        hiddenDiv.style.display = "block";
+        i.style.height = hiddenDiv.offsetHeight + "px";
+        hiddenDiv.style.visibility = "visible";
+        hiddenDiv.style.display = "none";
+      });
+    })(i);
+  }
 });
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+// ------------------------- Autosize textarea -------------------------
+textarea {
+  color: #444;
+  padding: 5px;
+}
+
+.txta {
+  width: 100%;
+  max-width: 500px;
+  min-height: 30px;
+  max-height: 60px;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+}
+</style>
