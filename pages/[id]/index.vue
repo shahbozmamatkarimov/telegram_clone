@@ -116,7 +116,7 @@
                 :key="i"
               >
                 <div
-                  class="my-2 min-w-[5rem] max-w-[70%]"
+                  class="messagesDiv my-2 min-w-[5rem] max-w-[70%]"
                   :class="index % 2 ? 'self-start' : 'self-end'"
                 >
                   <div
@@ -132,9 +132,7 @@
               </div>
             </div>
           </div>
-          <input id="file-input" type="file" accept="video/*">
 
-<video id="video" width="300" height="300" auto controls></video>
           <div
             class="flex items-center self-center sticky bottom-0 w-full text-gray-600 focus-within:text-gray-400"
           >
@@ -194,13 +192,127 @@
       </div>
     </section>
     <section>
-      <Upload />
+      <div
+        v-show="sidebar.openModal"
+        class="flex modal justify-center items-center absolute min-h-screen bg-[#80808038] z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full"
+      >
+        <div class="relative w-full max-w-xs max-h-full">
+          <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <div
+              class="flex items-start justify-between px-4 py-2 rounded-t dark:border-gray-600"
+            >
+              <h3
+                v-if="store.filetype === 'image'"
+                class="text-xl font-semibold text-gray-900 dark:text-white"
+              >
+                Send an image
+              </h3>
+              <h3
+                v-else-if="store.filetype === 'video'"
+                class="text-xl font-semibold text-gray-900 dark:text-white"
+              >
+                Send a video
+              </h3>
+              <h3
+                v-else-if="store.filetype === 'audio'"
+                class="text-xl font-semibold text-gray-900 dark:text-white"
+              >
+                Send an audio
+              </h3>
+              <h3
+                v-else
+                class="text-xl font-semibold text-gray-900 dark:text-white"
+              >
+                Send a file
+              </h3>
+              <button
+                @click="() => (sidebar.openModal = false)"
+                type="button"
+                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center"
+              >
+                <i class="bx bx-x text-2xl"></i>
+              </button>
+            </div>
+            <!-- Modal body -->
+            <div class="px-4 space-y-6 relative">
+              <div>
+                <div
+                  class="flex w-full z-10 justify-end absolute text-white right-5 top-2"
+                >
+                  <label for="upload">
+                    <i
+                      class="bx bx-refresh bg-[#00000032] rounded-l-md p-1 cursor-pointer"
+                    ></i>
+                  </label>
+                  <i
+                    @click="
+                      () => {
+                        sidebar.store.imageUrl = '';
+                        sidebar.openModal = false;
+                      }
+                    "
+                    class="bx bx-trash bg-[#00000032] rounded-r-md p-1 cursor-pointer"
+                  ></i>
+                </div>
+                <div id="filesDiv">
+                  <img
+                    v-show="store.filetype === 'image'"
+                    class="max-w-full m-auto border min-h-[10rem] bg-gray-200 max-h-[70vh] rounded object-cover"
+                    :src="sidebar.store.imageUrl"
+                    alt="img"
+                  />
+                  <div
+                    id="video-upload"
+                    class="flex items-center justify-center"
+                  ></div>
+                </div>
+              </div>
+              <div class="relative">
+                <input
+                  type="text"
+                  id="floating_outlined"
+                  class="block pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  placeholder=""
+                />
+                <hr class="border-2" />
+                <label
+                  for="floating_outlined"
+                  class="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-0"
+                  >Caption</label
+                >
+              </div>
+            </div>
+            <!-- Modal footer -->
+            <div
+              class="flex items-center justify-end p-6 space-x-2 rounded-b dark:border-gray-600"
+            >
+              <button
+                @click="() => (sidebar.openModal = false)"
+                class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none font-medium rounded-lg text-sm px-3 py-1.5 text-center"
+              >
+                Cancel
+              </button>
+              <button
+                id="sendFile"
+                class="text-gray-500 bg-white hover:bg-gray-100 focus:outline-none rounded-lg border border-gray-200 text-sm font-medium px-3 py-1.5 hover:text-gray-900 focus:z-10"
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
   </main>
 </template>
 
 <script setup>
 import { useSidebarStore } from "../../stores/sidebar";
+
+const store = reactive({
+  filetype: "image",
+  videoSrc: "",
+});
 
 const sidebar = useSidebarStore();
 
@@ -244,50 +356,57 @@ $(document).ready(function () {
 
   $("input[type=file]").change(function (e) {
     const file = e.target.files[0];
-    if (file.type.includes("image")) {
+    if (file?.type?.includes("image")) {
+      $("#video-upload").html("");
+      store.filetype = "image";
       sidebar.store.imageUrl = URL.createObjectURL(file);
       sidebar.openModal = true;
+    } else if (file.type.includes("video")) {
+      sidebar.openModal = true;
+      store.filetype = "video";
+      const uploader = `
+      <video
+        v-show="${store.filetype} === 'video'"
+        id="video"
+        muted
+        autoplay
+      >
+        <source src="${URL.createObjectURL(file)}" />
+      </video>`;
+      $("#video-upload").html(uploader);
+    } else if (file.type.includes("audio")) {
+      sidebar.openModal = true;
+      store.filetype = "audio";
+      const uploader = `
+      <audio
+        v-show="${store.filetype} === 'audio'"
+        controls
+      >
+        <source src="${URL.createObjectURL(file)}" />
+      </audio>`;
+      $("#video-upload").html(uploader);
     } else {
-      const reader = new FileReader();
-
-      reader.onload = function () {
-        sidebar.store.imageUrl = file;
-      };
-
-      reader.onprogress = function (e) {
-        console.log("progress: ", Math.round((e.loaded * 100) / e.total));
-      };
-
-      reader.readAsDataURL(file);
+      sidebar.openModal = true;
+      store.filetype = "file";
+      const uploader = `
+      <div class="flex gap-5 max-w-sm overflow-hidden items-center"
+        v-show="${store.filetype} === 'file'"
+      >
+        <i class="flex items-center justify-center bx bx-file text-3xl rounded-full bg-gray-500 text-white h-14 min-w-[3.5rem] w-14"></i>
+        <div>
+            <p class="truncate">${file.name}</p>
+            <p>${Math.round(file.size / 1000)} KB</p>
+        </div>
+      </div>`;
+      $("#video-upload").html(uploader);
     }
   });
-});
 
-onMounted(() => {
-  const input = document.getElementById("file-input");
-  const video = document.getElementById("video");
-  const videoSource = document.createElement("source");
-
-  input.addEventListener("change", function () {
-    const files = this.files || [];
-
-    if (!files.length) return;
-
-    const reader = new FileReader();
-
-    reader.onload = function (e) {
-      videoSource.setAttribute("src", e.target.result);
-      video.appendChild(videoSource);
-    //   video.load();
-    //   video.play();
-    };
-
-    reader.onprogress = function (e) {
-      console.log("progress: ", Math.round((e.loaded * 100) / e.total));
-    };
-
-    reader.readAsDataURL(files[0]);
-  });
+  // send file
+//   $("#sendFile").click(function () {
+//     console.log("object");
+//     $(".messagesDiv").append($("#filesDiv").html());
+//   });
 });
 </script>
 

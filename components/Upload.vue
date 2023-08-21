@@ -50,7 +50,13 @@
               :src="modal.store.imageUrl"
               class="max-w-full m-auto border min-h-[10rem] bg-gray-200 max-h-[70vh] rounded object-cover"
             ></video> -->
-<video id="video" width="300" height="300" autoplay controls></video>
+            <video
+              id="video"
+              width="300"
+              height="300"
+              autoplay
+              controls
+            ></video>
 
             <video
               id="video"
