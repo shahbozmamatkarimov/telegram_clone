@@ -6,7 +6,8 @@
     >
       <div class="flex justify-between px-3 pt-1 text-white">
         <div class="flex items-center w-full py-2">
-          <button @click="sidebar.userInfo = true"
+          <button
+            @click="sidebar.userInfo = true"
             aria-haspopup="true"
             class="p-2 text-gray-700 rounded-full focus:outline-none hover:text-gray-600 hover:bg-gray-200"
           >
@@ -58,8 +59,11 @@
         </div>
       </div>
       <div class="border-b shadow-bot">
-        <ul class="flex flex-row overflow-x-auto overflow-hidden items-center px-2 list-none select-none">
-          <li @click="$router.push('/451515')"
+        <ul
+          class="flex flex-row overflow-x-auto overflow-hidden items-center px-2 list-none select-none"
+        >
+          <li
+            @click="$router.push('/451515')"
             class="flex-auto px-1 mx-1 -mb-px text-center rounded-t-lg cursor-pointer last:mr-0 hover:bg-gray-200"
           >
             <a
@@ -68,7 +72,8 @@
               All
             </a>
           </li>
-          <li @click="$router.push('/451515')"
+          <li
+            @click="$router.push('/451515')"
             class="flex-auto px-1 mx-1 -mb-px text-center rounded-t-lg cursor-pointer last:mr-0 hover:bg-gray-200"
           >
             <a
@@ -77,7 +82,8 @@
               Work
             </a>
           </li>
-          <li @click="$router.push('/451515')"
+          <li
+            @click="$router.push('/451515')"
             class="flex-auto px-1 mx-1 -mb-px text-center rounded-t-lg cursor-pointer last:mr-0 hover:bg-gray-200"
           >
             <a
@@ -90,7 +96,8 @@
               >
             </a>
           </li>
-          <li @click="$router.push('/451515')"
+          <li
+            @click="$router.push('/451515')"
             class="flex-auto px-1 mx-1 -mb-px text-center rounded-t-lg cursor-pointer last:mr-0 hover:bg-gray-200"
           >
             <a
@@ -99,7 +106,8 @@
               Groups
             </a>
           </li>
-          <li @click="$router.push('/451515')"
+          <li
+            @click="$router.push('/451515')"
             class="flex-auto px-1 mx-1 -mb-px text-center rounded-t-lg cursor-pointer last:mr-0 hover:bg-gray-200"
           >
             <a
@@ -114,7 +122,8 @@
         class="relative mt-2 mb-4 overflow-x-hidden overflow-y-auto scrolling-touch lg:max-h-sm scrollbar-w-2 scrollbar-track-gray-lighter scrollbar-thumb-rounded scrollbar-thumb-gray"
       >
         <ul class="flex flex-col w-full h-screen px-2 select-none">
-          <li @click="$router.push('/451515')"
+          <li
+            @click="$router.push('/451515')"
             class="flex flex-no-wrap items-center pr-3 text-black rounded-lg cursor-pointer mt-200 py-65 hover:bg-gray-200"
             style="padding-top: 0.65rem; padding-bottom: 0.65rem"
           >
@@ -187,7 +196,8 @@
               </div>
             </div>
           </li>
-          <li @click="$router.push('/451515')"
+          <li
+            @click="$router.push('/451515')"
             class="flex flex-no-wrap items-center pr-3 text-black rounded-lg cursor-pointer mt-200 py-65 hover:bg-gray-200"
             style="padding-top: 0.65rem; padding-bottom: 0.65rem"
           >
@@ -260,7 +270,8 @@
               </div>
             </div>
           </li>
-          <li @click="$router.push('/451515')"
+          <li
+            @click="$router.push('/451515')"
             class="flex flex-no-wrap items-center pr-3 text-black rounded-lg cursor-pointer mt-200 py-65 hover:bg-gray-200"
             style="padding-top: 0.65rem; padding-bottom: 0.65rem"
           >
@@ -295,7 +306,8 @@
               </div>
             </div>
           </li>
-          <li @click="$router.push('/451515')"
+          <li
+            @click="$router.push('/451515')"
             class="flex flex-no-wrap items-center pr-3 text-black rounded-lg cursor-pointer mt-200 py-65 hover:bg-gray-200"
             style="padding-top: 0.65rem; padding-bottom: 0.65rem"
           >
@@ -312,7 +324,9 @@
                 </div>
                 <div class="items-center flex-1 min-w-0">
                   <div class="flex justify-between mb-1">
-                    <h2 class="text-sm line-clamp-1 font-semibold text-black">Meg Rigden</h2>
+                    <h2 class="text-sm line-clamp-1 font-semibold text-black">
+                      Meg Rigden
+                    </h2>
                     <div class="flex">
                       <span class="ml-1 text-xs font-medium text-gray-600"
                         >12.52</span
@@ -332,7 +346,8 @@
               </div>
             </div>
           </li>
-          <li @click="$router.push('/451515')"
+          <li
+            @click="$router.push('/451515')"
             class="flex flex-no-wrap items-center pr-3 text-black rounded-lg cursor-pointer mt-200 py-65 hover:bg-gray-200"
             style="padding-top: 0.65rem; padding-bottom: 0.65rem"
           >
@@ -358,7 +373,9 @@
                 </div>
                 <div class="items-center flex-1 min-w-0">
                   <div class="flex justify-between mb-1">
-                    <h2 class="text-sm line-clamp-1 font-semibold text-black">Mark Green</h2>
+                    <h2 class="text-sm line-clamp-1 font-semibold text-black">
+                      Mark Green
+                    </h2>
                     <div class="flex">
                       <span class="ml-1 text-xs font-medium text-gray-600"
                         >05:41</span
@@ -376,37 +393,121 @@
           </li>
         </ul>
       </div>
-      <div class="fixed bottom-0 right-0 z-40 mb-6 mr-4">
-        <button
-          class="flex items-center justify-center w-12 h-12 mr-3 text-xl font-semibold text-white bg-blue-500 rounded-full focus:outline-none flex-no-shrink"
-        >
-          <svg
-            class="w-6 h-6 text-white fill-current"
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
+      <div class="fixed addBot bottom-0 right-0 z-40 mb-6 mr-4">
+        <div>
+          <a-button class="addBTN" type="primary" @click="showModal"
+            ><button
+              class="flex items-center justify-center w-12 h-12 text-xl font-semibold text-white bg-blue-500 rounded-full focus:outline-none flex-no-shrink"
+            >
+              <i class="bx bx-plus font-bold text-2xl"></i></button
+          ></a-button>
+          <a-modal
+            v-model:open="open"
+            centered
+            title=""
+            ok-text="Next"
+            width="700"
+            @ok="handleOk"
           >
-            <path
-              fill-rule="nonzero"
-              d="M3,17.46 L3,20.5 C3,20.78 3.22,21 3.5,21 L6.54,21 C6.67,21 6.8,20.95 6.89,20.85 L17.4562847,10.2933914 C17.6300744,10.1200486 17.6494989,9.85064903 17.514594,9.65572084 L17.4564466,9.58644661 L17.4564466,9.58644661 L14.4135534,6.54355339 C14.2182912,6.34829124 13.9017088,6.34829124 13.7064466,6.54355339 L3.15,17.1 C3.05,17.2 3,17.32 3,17.46 Z M20.71,7.04 C21.1,6.65 21.1,6.02 20.71,5.63 L18.37,3.29 C17.98,2.9 17.35,2.9 16.96,3.29 L15.4835534,4.76644661 C15.2882912,4.96170876 15.2882912,5.27829124 15.4835534,5.47355339 L18.5264466,8.51644661 C18.7217088,8.71170876 19.0382912,8.71170876 19.2335534,8.51644661 L20.71,7.04 Z"
-            />
-          </svg>
-        </button>
+            <div class="flex gap-2 items-end">
+              <div v-if="store.imageUrl" class="imgPhoto relative">
+                <img
+                  class="object-cover  bg-blue-500 min-w-[5rem] w-20 h-20 rounded-full"
+                  :src="store.imageUrl"
+                  alt="photo"
+                />
+                <label
+                  for="uploadBotPhoto"
+                  class="bx bxs-camera bg-[#80808099] absolute hidden top-0 cursor-pointer items-center justify-center min-w-[5rem] w-20 h-20 text-white text-4xl rounded-full"
+                ></label>
+              </div>
+              <label
+                v-else
+                for="uploadBotPhoto"
+                class="bx bxs-camera cursor-pointer flex items-center justify-center bg-blue-500 min-w-[5rem] w-20 h-20 text-white text-4xl rounded-full"
+              ></label>
+              <input
+                type="file"
+                class="w-0 h-0 overflow-hidden"
+                id="uploadBotPhoto"
+                @change="handlePhoto"
+                accept="image/*"
+              />
+              <div class="relative z-0 w-full mb-4 group">
+                <input
+                  type="text"
+                  id="floating_first_name"
+                  class="block text-md font-medium py-2.5 px-0 w-full bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  placeholder=" "
+                  maxlength="50"
+                  required
+                />
+                <label
+                  for="floating_first_name"
+                  class="peer-focus:font-medium text-lg absolute duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                  >Bot nomi</label
+                >
+              </div>
+            </div>
+          </a-modal>
+        </div>
       </div>
     </div>
   </aside>
 </template>
 
 <script setup>
-import { useSidebarStore } from '../stores/sidebar';
+import { useSidebarStore } from "../stores/sidebar";
 const sidebar = useSidebarStore();
 
-$(document).ready(function() {
-  $("ul li").click(function() {
-    sidebar.toggleOpen()
-  })
+const store = reactive({
+  imageUrl: "",
+});
+
+const open = ref(false);
+
+const showModal = () => {
+  open.value = true;
+};
+
+const handleOk = (e) => {
+  console.log(e);
+  open.value = false;
+};
+
+const handlePhoto = (e) => {
+  const file = e.target.files[0];
+  if (file?.type?.includes("image")) {
+    store.imageUrl = URL.createObjectURL(file);
+  }
+};
+
+$(document).ready(function () {
+  $("ul li").click(function () {
+    sidebar.toggleOpen();
+  });
 });
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss">
+.ant-modal-close-x {
+  display: none !important;
+}
+
+.addBTN {
+  border-radius: 50% !important;
+  height: 3rem !important;
+  width: 3rem !important;
+  background: none !important;
+}
+
+.addBTN {
+  padding: 0 !important;
+}
+
+.imgPhoto:hover{
+  label{
+    display: flex !important;
+  }
+}
+</style>

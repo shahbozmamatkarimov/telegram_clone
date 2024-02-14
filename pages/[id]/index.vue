@@ -97,18 +97,19 @@
           class="top-0 bottom-0 left-0 right-0 flex flex-col flex-1 overflow-hidden bg-transparent bg-bottom bg-cover"
         >
           <div
-            class="self-center flex-1 w-full overflow-hidden overflow-y-auto chatSection max-h-[82.5vh]"
+            :class="stepOptions == 'Text' ? 'max-h-[70vh]' : 'max-h-[82.5vh]'"
+            class="self-center flex-1 w-full overflow-hidden overflow-y-auto chatSection"
           >
             <div class="messagesDiv relative flex flex-col px-3 py-1 m-auto">
               <div
                 class="self-center px-2 py-1 mx-0 my-1 text-sm text-gray-700 bg-white border border-gray-200 rounded-full shadow rounded-tg"
               >
-                Channel was created
+                Telegram bot was created
               </div>
               <div
                 class="self-center px-2 py-1 mx-0 my-1 text-sm text-gray-700 bg-white border border-gray-200 rounded-full shadow rounded-tg"
               >
-                May 6
+                May 6, 2023
               </div>
               <div
                 class="relative flex flex-col px-3 py-1 m-auto w-full"
@@ -131,9 +132,74 @@
                 </div>
               </div>
             </div>
+            <div
+              id="${new Date().getTime()}"
+              class="relative flex flex-col px-3 py-1 m-auto w-full"
+            >
+              <div v-show="stepOptions" class="my-2 min-w-[5rem] max-w-fit">
+                <div
+                  class="py-1 break-words px-2 text-sm bg-gray-200 sm:rounded-t-2xl sm:rounded-r-2xl rounded-t-lg rounded-r-lg shadow"
+                >
+                  <p class="pr-10">{{ store.sendTypeMessage }}</p>
+                  <p class="w-full text-end text-gray-400 text-xs">
+                    {{ hour }} AM
+                  </p>
+                </div>
+                <div
+                  class="grid grid-cols-2 max-w-[20rem] text-white text-sm font-bold gap-[0.1rem] my-1"
+                >
+                  <button
+                    @click="() => (stepOptions = '')"
+                    id="${new Date().getTime()}"
+                    class="stopValue bg-gray-500 border cursor-pointer text-center rounded-md py-1"
+                  >
+                    Stop
+                  </button>
+                  <label
+                    :class="
+                      stepOptions !== 'Text'
+                        ? 'bg-gray-500 border cursor-pointer text-center rounded-md py-1'
+                        : 'hidden'
+                    "
+                    for="upload"
+                  >
+                    Continue
+                  </label>
+                  <label
+                    for="textarea"
+                    @click="() => (stepOptions = 'Text')"
+                    :class="
+                      stepOptions !== 'Text'
+                        ? 'hidden'
+                        : 'bg-gray-500 border cursor-pointer text-center rounded-md py-1'
+                    "
+                  >
+                    Continue
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div
+              class="options d-none grid grid-cols-6 max-w-[20rem] text-white gap-[0.1rem] m-5"
+            >
+              <h1 class="col-span-full bg-gray-500 py-1 px-2 rounded-md">
+                Choose one of the following:
+              </h1>
+              <label
+                @click="() => selectedOption(index)"
+                :class="index > 2 ? 'col-span-3' : 'col-span-2'"
+                class="bg-gray-500 border cursor-pointer text-center rounded-md py-2"
+                v-for="(i, index) in options"
+                :key="i"
+                :for="index !== 0 ? 'upload' : ''"
+              >
+                {{ i }}
+              </label>
+            </div>
           </div>
 
           <div
+            id="sendMessage"
             class="flex items-center self-center sticky bottom-0 w-full text-gray-600 focus-within:text-gray-400"
           >
             <form @submit.prevent="sendMessage" class="w-full relative">
@@ -143,11 +209,36 @@
               >
                 <i class="bx bx-paperclip text-xl pt-1 rotate-[135deg]"></i>
               </label>
-              <input class="w-0 h-0 overflow-hidden" id="upload" type="file" />
-              <span class="absolute inset-y-0 right-0 flex items-center pr-6">
+              <!-- <input class="w-0 h-0 overflow-hidden" id="upload" type="file" /> -->
+              <input
+                :accept="
+                  stepOptions !== 'Document'
+                    ? `${stepOptions.toLowerCase()}/*`
+                    : '.doc, .pdf, .txt, .xlsx'
+                "
+                class="w-0 h-0 overflow-hidden"
+                id="upload"
+                type="file"
+              />
+              <span
+                class="absolute inset-y-0 right-0 flex flex-col justify-center pr-6"
+              >
+                <button
+                  @click="
+                    () => {
+                      stepOptions = '';
+                      store.textAreaValue = '';
+                    }
+                  "
+                  v-show="stepOptions === 'Text'"
+                  type="submit"
+                  class="p-1 z-50 relative focus:outline-none focus:shadow-none hover:text-blue-500 hover:bg-gray-300"
+                >
+                  <i class="bx bx-x text-2xl"></i>
+                </button>
                 <button
                   type="submit"
-                  class="p-1 focus:outline-none focus:shadow-none hover:text-blue-500"
+                  class="p-1 z-50 relative focus:outline-none focus:shadow-none hover:text-blue-500"
                 >
                   <svg
                     class="w-6 h-6 fill-current"
@@ -163,8 +254,9 @@
                   </svg>
                 </button>
               </span>
-              <ul class="absolute ul hidden bottom-14 w-full z-20 bg-white">
+              <ul class="absolute ul bottom-14 w-full z-50 bg-white">
                 <li
+                  v-show="message.length"
                   v-for="i in commands"
                   :key="i"
                   :class="i.indexOf(message) !== -1 ? '' : 'hidden'"
@@ -178,11 +270,21 @@
                   <span>{{ i }}</span>
                 </li>
               </ul>
+              <textarea
+                v-if="stepOptions === 'Text'"
+                v-model="store.textAreaValue"
+                rows="5"
+                id="textarea"
+                class="w-full z-30 relative -bottom-3 py-2 pr-14 pl-2 mr-10 text-sm bg-white border border-transparent appearance-none rounded-tg text-gray-900 placeholder-gray-800 focus:outline-none focus:shadow-outline-blue"
+                placeholder=""
+              ></textarea>
               <input
+                v-else
                 type="search"
                 autofocus
                 v-model="message"
-                class="w-full py-5 pl-14 pr-14 text-sm bg-white border border-transparent appearance-none rounded-tg text-gray-900 placeholder-gray-800 focus:outline-none focus:shadow-outline-blue"
+                @change="() => changeMessage()"
+                class="w-full py-5 pl-14 pr-14 messageInput text-sm bg-white border border-transparent appearance-none rounded-tg text-gray-900 placeholder-gray-800 focus:outline-none focus:shadow-outline-blue"
                 placeholder="Message..."
                 autocomplete="off"
               />
@@ -295,10 +397,25 @@
               >
                 Cancel
               </button>
+              <a-popover v-if="content.length">
+                <template #content>
+                  <p>{{ content }}</p>
+                </template>
+                <a-button>
+                  <i
+                    @click="() => sendFile()"
+                    id="sendFile"
+                    class="cancelUpload -mt-2 text-gray-500 bg-white focus:outline-none rounded-lg text-sm font-medium px-3 py-1 hover:text-gray-900 focus:z-10"
+                  >
+                    Send
+                  </i>
+                </a-button>
+              </a-popover>
               <button
+                v-else
                 @click="() => sendFile()"
                 id="sendFile"
-                class="cancelUpload text-gray-500 bg-white hover:bg-gray-100 focus:outline-none rounded-lg border border-gray-200 text-sm font-medium px-3 py-1.5 hover:text-gray-900 focus:z-10"
+                class="cancelUpload border text-gray-500 bg-white focus:outline-none rounded-lg text-sm font-medium px-3 py-1.5 hover:text-gray-900 focus:z-10"
               >
                 Send
               </button>
@@ -318,14 +435,27 @@ const store = reactive({
   filetype: "image",
   videoSrc: "",
   caption: "",
+  textAreaValue: "",
+  sendTypeMessage: "",
 });
+
+const content = ref("");
+const stepOptions = ref("");
 const message = ref("");
-const commands = ref(["/start", "/text", "/audio", "/file", "/photo"]);
+const commands = ref([]);
+const options = ref(["Text", "Image", "Video", "Audio", "Document"]);
+const optionReply = ref([
+  "Please send a text",
+  "Please select and send an image",
+  "Please select and send a video",
+  "Please select and send an audio",
+  "Please select and send a document",
+]);
 
 // ------------------------- Fake store -------------------------
 const arr = ref([
-  { whom: "you", message: "Hello world", time: "12: 00" },
-  { whom: "Nickname", message: "Hi!", time: "12:01" },
+  // { whom: "you", message: "Hello world", time: "12: 00" },
+  // { whom: "Nickname", message: "Hi!", time: "12:01" },
 ]);
 
 // ------------------------- Scroll Bottom -------------------------
@@ -336,8 +466,46 @@ const crollBottom = () => {
   );
 };
 
+const changeMessage = () => {
+  message.value = message.value.trim();
+  if (message.value.split("")[0] !== "/") {
+    message.value = "/" + message.value;
+  }
+};
+
+const selectedOption = (val) => {
+  $(".options").addClass("d-none");
+  let hour = new Date().getHours();
+  let minute = new Date().getMinutes();
+  if (minute < 10) {
+    minute = "0" + minute;
+  }
+  if (hour < 10) {
+    hour = "0" + hour;
+  }
+  hour = hour + ":" + minute;
+  stepOptions.value = options.value[val];
+  store.sendTypeMessage = optionReply.value[+val];
+  $("#sendMessage *").attr("disabled", false);
+  $("#sendMessage *").removeClass("cursor-not-allowed");
+  if (val !== 0) {
+    $("#sendMessage .messageInput").attr("disabled", true);
+    $("#sendMessage .messageInput").addClass("cursor-not-allowed");
+  }
+};
+
 // ------------------------- Send only TEXT Messages -------------------------
 const sendMessage = (e) => {
+  if (store.textAreaValue.length) {
+    message.value = store.textAreaValue.trim();
+  } else {
+    for (let i of commands.value) {
+      console.log(i);
+      if (i === message.value) {
+        return;
+      }
+    }
+  }
   if (!message.value.length) return;
   let hour = new Date().getHours();
   let minute = new Date().getMinutes();
@@ -353,30 +521,65 @@ const sendMessage = (e) => {
     class="relative flex flex-col px-3 py-1 m-auto w-full"
   >
     <div
-      class="my-2 min-w-[5rem] max-w-[70%] self-end"
+      class="${
+        store.textAreaValue
+          ? "my-2 min-w-[5rem] max-w-[70%] flex"
+          : "my-2 min-w-[5rem] max-w-[70%] self-end"
+      }"
     >
-      <div
-        class="py-1 break-words px-2 text-sm bg-white sm:rounded-t-2xl sm:rounded-r-2xl rounded-t-lg rounded-r-lg shadow"
-      >
-        ${message.value}
-        <p class="w-full text-end text-gray-400 text-xs">
-          ${hour} AM
-        </p>
-      </div>
+      <pre
+        class="${
+          store.textAreaValue
+            ? "hidden"
+            : "py-1 break-words px-2 text-sm bg-white sm:rounded-t-2xl sm:rounded-r-2xl rounded-t-lg rounded-r-lg shadow"
+        }"
+      >${message.value.trim()}<p class="w-full text-end text-gray-400 text-xs">${hour} AM</p></pre>
+      <pre class="${
+        store.textAreaValue
+          ? "py-1 break-words px-2 text-sm bg-gray-200 sm:rounded-t-2xl sm:rounded-r-2xl rounded-t-lg rounded-r-lg shadow"
+          : "hidden"
+      }"
+      >${message.value.trim()}<p class="w-full text-end text-gray-400 text-xs">${hour} AM</p></pre>
     </div>
   </div>`;
   const Main = document.querySelector(".messagesDiv");
   Main.append(div);
+  if (store.textAreaValue.length) {
+    message.value = "";
+    store.textAreaValue = "";
+    return;
+  }
+  commands.value.push(message.value.trim());
   message.value = "";
   crollBottom();
+  $(".options").removeClass("d-none");
+  $("#sendMessage *").attr("disabled", true);
+  $("#sendMessage *").addClass("cursor-not-allowed");
 };
 
 // ------------------------- Send files(Image, Video, Audio and Documents) -------------------------
 async function sendFile() {
   const div = document.createElement("div");
   div.className =
-    "my-2 h-full bg-white rounded-2xl overflow-hidden self-end min-w-[5rem] max-w-[70%]";
+    "my-2 h-full bg-white rounded-2xl mx-3 overflow-hidden min-w-[5rem] w-fit max-w-[70%]";
 
+  if (store.filetype == "file" && stepOptions.value == "Document") {
+  } else if (store.filetype !== stepOptions.value.toLowerCase()) {
+    if (stepOptions.value == "Text") {
+      content.value = optionReply.value[0];
+    } else if (stepOptions.value == "Image") {
+      content.value = optionReply.value[1];
+    } else if (stepOptions.value == "Video") {
+      content.value = optionReply.value[2];
+    } else if (stepOptions.value == "Audio") {
+      content.value = optionReply.value[3];
+    } else if (stepOptions.value == "Document") {
+      content.value = optionReply.value[4];
+    } else {
+      content.value = "Enter the bot command";
+    }
+    return;
+  }
   if (store.filetype === "image") {
     const fileSrc = document.querySelector("#filesDiv img").src;
     div.innerHTML = `<img class="max-w-full border min-h-[10rem] bg-gray-200 max-h-[70vh] rounded object-cover" src="${fileSrc}" alt="img">`;
@@ -431,23 +634,40 @@ async function sendFile() {
 
   p.innerHTML = hour + " PM";
   p.className =
-    "float-right -mt-5 mr-2 bg-white/40 text-xs px-1 rounded-md relative z-10";
+    "float-right -mt-5 mr-2 bg-white/40 text-xs px-1 rounded-md relative";
   div.appendChild(p);
   const Main = document.querySelector(".messagesDiv");
   Main.append(div);
   sidebar.openModal = false;
   document.querySelector("#video-upload").innerHTML = "";
   crollBottom();
+  content.value = "";
+  $("#upload").attr("value", "");
 }
 
 // ------------------------- jQuery -------------------------
 $(document).ready(function () {
   $("input").on("input", function () {
-    if ($(this).val()[0] == "/") {
-      $(".ul").removeClass("hidden");
-    } else {
-      $(".ul").addClass("hidden");
-    }
+    $(".ul").removeClass("hidden");
+    // if ($(this).val()[0] == "/") {
+    //   $(".ul").removeClass("hidden");
+    // } else {
+    //   $(".ul").addClass("hidden");
+    // }
+  });
+
+  // $("input").change(function () {
+  //     $(".ul").addClass("hidden");
+  //   // if ($(this).val()[0] == "/") {
+  //   //   $(".ul").removeClass("hidden");
+  //   // } else {
+  //   //   $(".ul").addClass("hidden");
+  //   // }
+  // });
+
+  $(".stopValue").click(function () {
+    $("#sendMessage .messageInput").attr("disabled", false);
+    $("#sendMessage .messageInput").removeClass("cursor-not-allowed");
   });
 
   // ------------------------- Send Bot Commands(/start, /image, /video, /audio) -------------------------
@@ -464,8 +684,11 @@ $(document).ready(function () {
     $("textarea").addClass = "h-[30px]";
   });
 
+  $("#sendMessage[disabled='true']").css("border", "5px solid #000");
+
   // ------------------------- Upload file Input change Listener -------------------------
   $("input[type=file]").change(function (e) {
+    content.value = "";
     const file = e.target.files[0];
     if (file?.type?.includes("image")) {
       $("#video-upload").html("");
@@ -551,11 +774,6 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 // ------------------------- Autosize textarea -------------------------
-textarea {
-  color: #444;
-  padding: 5px;
-}
-
 .txta {
   width: 100%;
   max-width: 500px;
@@ -564,4 +782,10 @@ textarea {
   font-family: Arial, sans-serif;
   font-size: 16px;
 }
+
+.d-none {
+  display: none;
+}
 </style>
+
+

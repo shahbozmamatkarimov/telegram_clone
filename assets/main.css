@@ -10,3 +10,7 @@ html, body {
     width: 0;
     height: 0;
 }
+
+.ant-btn-primary {
+    background: rgb(59 130 246);
+}
